@@ -12,5 +12,14 @@ const root=document.documentElement,tb=document.getElementById('theme');
 tb.onclick=()=>{const dark=root.dataset.theme==='dark'||(!root.dataset.theme&&matchMedia('(prefers-color-scheme:dark)').matches);root.dataset.theme=dark?'light':'dark';tb.textContent=dark?'🌙':'☀️'};
 
 const aud=document.getElementById('aud'),pb=document.getElementById('play'),am=document.getElementById('audmsg');
-pb.onclick=()=>{if(aud.paused){aud.play().then(()=>{pb.textContent='⏸ Jeda';am.textContent=''}).catch(()=>{am.textContent='File musik.mp3 belum ada. Taruh di folder yang sama dengan index.html.'})}else{aud.pause();pb.textContent='▶ Putar'}};
-aud.onended=()=>{pb.textContent='▶ Putar'};
+pb.onclick=()=>{
+  if(aud.paused){
+    am.textContent='Memuat lagu...';
+    const p=aud.play();
+    if(p&&p.catch)p.catch(e=>{am.textContent=(e&&e.name==='NotAllowedError')?'Ketuk tombolnya sekali lagi ya.':'Lagu belum bisa diputar. Pastikan musik.mp3 ikut ter-upload.'});
+  }else{aud.pause()}
+};
+aud.addEventListener('playing',()=>{pb.textContent='⏸ Jeda';am.textContent=''});
+aud.addEventListener('pause',()=>{pb.textContent='▶ Putar'});
+aud.addEventListener('ended',()=>{pb.textContent='▶ Putar'});
+aud.addEventListener('error',()=>{am.textContent='Lagu gagal dimuat. Pastikan musik.mp3 ada di folder yang sama dan ikut ter-upload.'});
